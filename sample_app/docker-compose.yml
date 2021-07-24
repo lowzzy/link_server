@@ -1,0 +1,37 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    volumes:
+      - .:/API_sample
+    tty: true
+    networks:
+      - app-net
+  db:
+    image: mysql:5.7
+    volumes:
+      - mysql_data:/var/lib/mysql/
+      # 追記,こっちのvolumeを使う
+      # - db_volume:/var/lib/mysql:delegated
+      # - ./docker/db/conf.d:/etc/mysql/conf.d:delegated
+      # - ./config/schema:/docker-entrypoint-initdb.d:delegated
+    environment:
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    networks:
+      - app-net
+volumes:
+  mysql_data:
+
+networks:
+  app-net:
+    name: app_net
+    driver: bridge
